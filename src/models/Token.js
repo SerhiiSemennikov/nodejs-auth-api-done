@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../utils/db.js';
-import { User } from './user.js';
+import { User } from './User.js';
 
 export const Token = sequelize.define('token', {
   refreshToken: {

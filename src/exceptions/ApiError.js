@@ -17,4 +17,7 @@ export class ApiError extends Error {
   static NotFound() {
     return new ApiError(404, 'Not found');
   }
+  static ExistingTodo() {
+    return new ApiError(400, 'A todo with the same title already exists for this user');
+  }
 }

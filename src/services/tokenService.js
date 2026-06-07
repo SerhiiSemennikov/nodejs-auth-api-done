@@ -1,4 +1,4 @@
-import { Token } from '../models/token.js';
+import { Token } from '../models/Token.js';
 
 async function save(userId, refreshToken) {
   const token = await Token.findOne({
@@ -21,7 +21,7 @@ function getByToken(refreshToken) {
     where: { refreshToken },
   });
 }
-
+ 
 function remove(userId) {
   return Token.destroy({
     where: { userId },

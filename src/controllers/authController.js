@@ -1,10 +1,12 @@
 import bcrypt from 'bcrypt';
 
 import { ApiError } from '../exceptions/ApiError.js';
-import { User } from '../models/user.js';
+import { User } from '../models/User.js';
 import { jwtService } from '../services/jwtService.js';
 import { tokenService } from '../services/tokenService.js';
 import { userService } from '../services/userService.js';
+
+
 
 function validateEmail(value) {
   if (!value) {
@@ -66,7 +68,8 @@ async function activate(req, res, next) {
 async function login(req, res, next) {
   const { email, password } = req.body;
   const user = await userService.getByEmail(email);
-
+  
+ 
   if (!user) {
     throw ApiError.BadRequest('User with this email does not exist');
   }
@@ -82,6 +85,12 @@ async function login(req, res, next) {
 
 async function refresh(req, res, next) {
   const { refreshToken } = req.cookies;
+  
+
+  if (!refreshToken) {
+    throw ApiError.Unauthorized();
+  }
+  
   const userData = jwtService.validateRefreshToken(refreshToken);
 
   if (!userData) {
@@ -95,15 +104,19 @@ async function refresh(req, res, next) {
   }
 
   const user = await userService.getByEmail(userData.email);
-
+console.log('refresh user', user.email);
   await sendAuthentication(res, user);
 }
 
 async function logout(req, res, next) {
   const { refreshToken } = req.cookies;
   const userData = jwtService.validateRefreshToken(refreshToken);
-
-  res.clearCookie('refreshToken');
+    
+  res.clearCookie('refreshToken', {
+    httpOnly: true,
+    sameSite: 'none',
+    secure: true,
+  });
 
   if (userData) {
     await tokenService.remove(userData.id);
@@ -119,6 +132,11 @@ async function sendAuthentication(res, user) {
 
   await tokenService.save(user.id, refreshToken);
 
+  /* user.accessToken = accessToken;
+  user.refreshToken = refreshToken;
+  user.isActivated = true;
+    await user.save(); */
+  
   res.cookie('refreshToken', refreshToken, {
     maxAge: 30 * 24 * 60 * 60 * 1000,
     httpOnly: true,

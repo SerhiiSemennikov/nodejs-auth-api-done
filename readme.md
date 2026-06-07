@@ -7,3 +7,5 @@ This a final repo for the API of Node.js Auth lesson
 - `npm i`
 - `npm start`
 - Use Postman or the [Login App](https://github.com/mate-academy/login-app) to see how it works.
+
+npm config set strict-ssl=false
